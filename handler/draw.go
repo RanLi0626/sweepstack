@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//Draw is the handler to draw the award
+// Draw is the handler to draw the award
 func Draw() {
 	http.HandleFunc("/draw", draw)
 	http.ListenAndServe(":8080", nil)
@@ -21,5 +21,17 @@ func draw(w http.ResponseWriter, r *http.Request) {
 	}
 	var username string
 	username = usernames[0]
-	w.Write([]byte("test"))
+
+	// TODO getRamdomAward()
+	// TODO winCheck()
+
+	w.Write([]byte(username))
+}
+
+func getRamdomAward() {
+
+}
+
+func winCheck() {
+
 }

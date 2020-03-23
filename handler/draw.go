@@ -107,7 +107,7 @@ func winCheck() error {
 		// TODO win the prize
 	}
 
-	conn, err := redis.GetConn()
+	conn, err := red.GetConn()
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 )
@@ -48,10 +49,27 @@ func winCheck() {
 	if err != nil {
 		return
 	}
+
 	totalPrizeNum := getTotalPrizeNum()
-	deltaTime := end.Sub(start).Seconds() / totalPrizeNum
+	deltaTime := end.Sub(start).Nanoseconds() / totalPrizeNum
+	random := rand.New(rand.NewSource(end.Sub(getLastReleasedTime()).Nanoseconds()))
+
+	nextReleasedTime := start.UnixNano() + deltaTime*getReleasedNum() + int64(random.Int())
+	if time.Now().UnixNano() >= nextReleasedTime {
+		// TODO win the prize
+	}
 }
 
-func getTotalPrizeNum() int {
+func getTotalPrizeNum() int64 {
 	return 10 + 20 + 30
+}
+
+func getReleasedNum() int64 {
+	// TODO get from redis
+	return 20
+}
+
+func getLastReleasedTime() time.Time {
+	// TODO get from redis
+	return time.Now()
 }

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"sweepstake/handler"
-	"sweepstake/redis"
+	"goexcersise/sweepstack/handler"
+	"goexcersise/sweepstack/redis"
 )
 
 func init() {

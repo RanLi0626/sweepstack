@@ -3,6 +3,13 @@ package handler
 import (
 	"log"
 	"net/http"
+	"time"
+)
+
+var (
+	layout    string = "2006-01-02 15:04:05"
+	startTime string = "2020-03-20 00:00:00"
+	endTime   string = "2020-03-21 00:00:00"
 )
 
 // Draw is the handler to draw the award
@@ -33,5 +40,18 @@ func getRamdomAward() {
 }
 
 func winCheck() {
+	end, err := time.Parse(layout, endTime)
+	if err != nil {
+		return
+	}
+	start, err := time.Parse(layout, startTime)
+	if err != nil {
+		return
+	}
+	totalPrizeNum := getTotalPrizeNum()
+	deltaTime := end.Sub(start).Seconds() / totalPrizeNum
+}
 
+func getTotalPrizeNum() int {
+	return 10 + 20 + 30
 }

@@ -1,9 +1,9 @@
-# database:
+# database
 ## redis 
 1. award_time[zset] value:award_name  score:winning_time
 2. award_remain_num[hash]  field:award_name  value:award_remain_num
 
-# 抽奖算法：
+# 抽奖算法
 1. 从剩余奖池中随机抽取此次抽奖的奖品
 2. 判断本次抽奖是否中奖
    - 平均发放奖品的时间间隔：(end_time - start_time) / prizes_total_amount  -> A

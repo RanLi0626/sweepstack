@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -9,23 +8,22 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func getConn() redis.Conn {
+func GetConn() (redis.Conn, error) {
 	conn, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", "127.0.0.1", 6379))
 	if err != nil {
 		log.Println("connect redis error", err)
-		return nil
+		return nil, err
 	}
 
-	return conn
+	return conn, nil
 }
 
 //InitRedis used to init award_time and award_remain_num
 func InitRedis() error {
-	fmt.Println("test")
-	conn := getConn()
-	if conn == nil {
+	conn, err := GetConn()
+	if err != nil {
 		log.Println("conn is nil")
-		return errors.New("conn is nil")
+		return err
 	}
 	defer conn.Close()
 

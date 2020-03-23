@@ -1,4 +1,4 @@
-module goexcersise/sweepstack
+module sweepstake
 
 go 1.13
 

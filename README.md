@@ -1,7 +1,7 @@
 # database
 ## redis 
-1. award_time[zset] value:award_name  score:winning_time
-2. award_remain_num[hash]  field:award_name  value:award_remain_num
+1. award_time[hash] value:award_name  score:winning_time
+2. award_remain_num[zset]  field:award_name  value:award_remain_num
 
 # 抽奖算法
 1. 从剩余奖池中随机抽取此次抽奖的奖品

@@ -27,12 +27,13 @@ func InitRedis() error {
 	}
 	defer conn.Close()
 
+	startTime, _ := time.Parse("2006-01-02 15:04:05", "2020-03-25 17:00:00")
 	conn.Send("ZADD", "award_remain_num", 200, "A")
 	conn.Send("ZADD", "award_remain_num", 400, "B")
 	conn.Send("ZADD", "award_remain_num", 800, "C")
-	conn.Send("HSET", "award_time", "A", time.Now().Format(time.RFC3339))
-	conn.Send("HSET", "award_time", "B", time.Now().Format(time.RFC3339))
-	conn.Send("HSET", "award_time", "C", time.Now().Format(time.RFC3339))
+	conn.Send("HSET", "award_time", "A", startTime.Format(time.RFC3339))
+	conn.Send("HSET", "award_time", "B", startTime.Format(time.RFC3339))
+	conn.Send("HSET", "award_time", "C", startTime.Format(time.RFC3339))
 	conn.Flush()
 
 	for i := 0; i < 3; i++ {

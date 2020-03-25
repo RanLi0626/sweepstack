@@ -86,6 +86,7 @@ func winCheck() (*award, error) {
 
 	deltaTime := (e - s) / getTotalPrizeNum()
 	random := rand.New(rand.NewSource(e - award.lastReleasedTime.Unix()))
+	log.Printf("lastReleasedTime %v", award.lastReleasedTime.Unix())
 
 	nextReleasedTime := s + deltaTime*getReleasedNum(*award) + int64(random.Int())%deltaTime
 	log.Printf("nextReleasedTime %v, now %v", nextReleasedTime, time.Now().Unix())

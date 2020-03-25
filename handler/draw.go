@@ -15,8 +15,8 @@ import (
 
 var (
 	layout    string = "2006-01-02 15:04:05"
-	startTime string = "2020-03-24 00:00:00"
-	endTime   string = "2020-03-25 00:00:00"
+	startTime string = "2020-03-25 17:00:00"
+	endTime   string = "2020-03-25 19:00:00"
 )
 
 type award struct {
@@ -68,6 +68,7 @@ func winCheck() (*award, error) {
 		log.Printf("err in winCheck(), err : %v", err)
 		return nil, err
 	}
+	log.Printf("award %v", award)
 
 	end, err := time.Parse(layout, endTime)
 	if err != nil {
@@ -80,11 +81,11 @@ func winCheck() (*award, error) {
 		return nil, err
 	}
 
-	totalPrizeNum := getTotalPrizeNum()
-	deltaTime := end.Sub(start).Nanoseconds() / totalPrizeNum
+	deltaTime := end.Sub(start).Nanoseconds() / getTotalPrizeNum
 	random := rand.New(rand.NewSource(end.Sub(award.lastReleasedTime).Nanoseconds()))
 
-	nextReleasedTime := start.UnixNano() + deltaTime*getReleasedNum(*award) + int64(random.Int())
+	nextReleasedTime := start.UnixNano() + deltaTime*getReleasedNum(*award) + int64(random.Int())%deltaTime
+	log.Printf("nextReleasedTime %v, now %v", nextReleasedTime, time.Now().UnixNano())
 	if time.Now().UnixNano() < nextReleasedTime {
 		return nil, errors.New("failed")
 	}
@@ -135,24 +136,33 @@ func getRamdomAward() (*award, error) {
 		}
 		totalRemainedNum = totalRemainedNum + remainedNum
 	}
+	log.Printf("totalRemaindNum : %v, result : %v", totalRemainedNum, result)
 
 	// Get random award.
 	random := rand.New(rand.NewSource(totalRemainedNum))
 	num := random.Int63n(totalRemainedNum)
+	log.Printf("num : %V", num)
 
 	var a *award
+	var total int64
 	for k, v := range result {
 		remainedNum, err := strconv.ParseInt(v, 10, 64)
 		if remainedNum == 0 {
 			continue
 		}
+		total = total + remainedNum
 		if err != nil {
 			log.Printf("err in getRamdomAward(), err : %v", err)
 			return nil, err
 		}
-		if num-remainedNum < 0 {
+		if num-total < 0 {
 			a = &award{name: k, remainedNum: remainedNum}
+			break
 		}
+	}
+
+	if a == nil {
+		return nil, errors.New("err in getRemainedNum(), got nothing")
 	}
 
 	// Get lastUpdateTime.
@@ -172,19 +182,19 @@ func getRamdomAward() (*award, error) {
 }
 
 func getTotalPrizeNum() int64 {
-	return 20 + 40 + 80
+	return 200 + 400 + 800
 }
 
 func getReleasedNum(a award) int64 {
 	// TODO get from redis
 	if a.name == "A" {
-		return 20 - a.remainedNum
+		return 200 - a.remainedNum
 	}
 	if a.name == "B" {
-		return 40 - a.remainedNum
+		return 400 - a.remainedNum
 	}
 	if a.name == "C" {
-		return 80 - a.remainedNum
+		return 800 - a.remainedNum
 	}
 	return 0
 }

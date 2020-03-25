@@ -27,9 +27,9 @@ func InitRedis() error {
 	}
 	defer conn.Close()
 
-	conn.Send("ZADD", "award_remain_num", 20, "A")
-	conn.Send("ZADD", "award_remain_num", 40, "B")
-	conn.Send("ZADD", "award_remain_num", 80, "C")
+	conn.Send("ZADD", "award_remain_num", 200, "A")
+	conn.Send("ZADD", "award_remain_num", 400, "B")
+	conn.Send("ZADD", "award_remain_num", 800, "C")
 	conn.Send("HSET", "award_time", "A", time.Now().Format(time.RFC3339))
 	conn.Send("HSET", "award_time", "B", time.Now().Format(time.RFC3339))
 	conn.Send("HSET", "award_time", "C", time.Now().Format(time.RFC3339))

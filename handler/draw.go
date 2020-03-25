@@ -81,12 +81,15 @@ func winCheck() (*award, error) {
 		return nil, err
 	}
 
-	deltaTime := end.Sub(start).Nanoseconds() / getTotalPrizeNum
-	random := rand.New(rand.NewSource(end.Sub(award.lastReleasedTime).Nanoseconds()))
+	e := end.Unix()
+	s := start.Unix()
 
-	nextReleasedTime := start.UnixNano() + deltaTime*getReleasedNum(*award) + int64(random.Int())%deltaTime
-	log.Printf("nextReleasedTime %v, now %v", nextReleasedTime, time.Now().UnixNano())
-	if time.Now().UnixNano() < nextReleasedTime {
+	deltaTime := (e - s) / getTotalPrizeNum()
+	random := rand.New(rand.NewSource(e - award.lastReleasedTime.Unix()))
+
+	nextReleasedTime := s + deltaTime*getReleasedNum(*award) + int64(random.Int())%deltaTime
+	log.Printf("nextReleasedTime %v, now %v", nextReleasedTime, time.Now().Unix())
+	if time.Now().Unix() < nextReleasedTime {
 		return nil, errors.New("failed")
 	}
 

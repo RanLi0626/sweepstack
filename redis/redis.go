@@ -36,7 +36,7 @@ func InitRedis() error {
 	conn.Send("HSET", "award_time", "C", startTime.Format(time.RFC3339))
 	conn.Flush()
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 6; i++ {
 		_, err := conn.Receive()
 		if err != nil {
 			log.Printf("conn send error, %s", err)

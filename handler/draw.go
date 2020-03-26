@@ -44,6 +44,8 @@ func draw(w http.ResponseWriter, r *http.Request) {
 	username = usernames[0]
 
 	award, err := winCheck()
+	log.Printf("err id %v", err)
+	log.Printf("award id %v", award)
 	if err != nil {
 		log.Printf("nothing, err :%s", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -54,12 +56,12 @@ func draw(w http.ResponseWriter, r *http.Request) {
 		log.Println("win")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(username + ", you win"))
+		return
 	} else {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("lose"))
+		return
 	}
-
-	return
 }
 
 func winCheck() (*award, error) {
@@ -68,14 +70,13 @@ func winCheck() (*award, error) {
 		log.Printf("err in winCheck(), err : %v", err)
 		return nil, err
 	}
-	log.Printf("award %v", award)
 
-	end, err := time.Parse(layout, endTime)
+	end, err := time.ParseInLocation(layout, endTime, time.Local)
 	if err != nil {
 		log.Printf("err in winCheck(), err : %v", err)
 		return nil, err
 	}
-	start, err := time.Parse(layout, startTime)
+	start, err := time.ParseInLocation(layout, startTime, time.Local)
 	if err != nil {
 		log.Printf("err in winCheck(), err : %v", err)
 		return nil, err
@@ -86,20 +87,20 @@ func winCheck() (*award, error) {
 
 	deltaTime := (e - s) / getTotalPrizeNum()
 	random := rand.New(rand.NewSource(e - award.lastReleasedTime.Unix()))
-	log.Printf("lastReleasedTime %v", award.lastReleasedTime.Unix())
 
 	nextReleasedTime := s + deltaTime*getReleasedNum(*award) + int64(random.Int())%deltaTime
-	log.Printf("nextReleasedTime %v, now %v", nextReleasedTime, time.Now().Unix())
 	if time.Now().Unix() < nextReleasedTime {
 		return nil, errors.New("failed")
 	}
 
+	log.Println("running ")
 	conn, err := red.GetConn()
 	if err != nil {
 		log.Printf("err in winCheck(), err : %v", err)
 		return nil, err
 	}
 	defer conn.Close()
+	log.Println("conning ")
 
 	conn.Send("WATCH", "award_remain_num")
 	conn.Send("MULTI")
@@ -107,13 +108,12 @@ func winCheck() (*award, error) {
 	conn.Send("ZADD", "award_remain_num", award.name, award.remainedNum-1)
 	conn.Send("EXEC")
 
-	for i := 0; i < 3; i++ {
-		_, err := conn.Receive()
-		if err != nil {
-			log.Printf("conn send error, %s", err)
-			return nil, err
-		}
+	err = conn.Flush()
+	if err != nil {
+		log.Println("redis error, ", err)
+		return nil, err
 	}
+	log.Println("execed done ")
 
 	return award, nil
 }
@@ -140,12 +140,10 @@ func getRamdomAward() (*award, error) {
 		}
 		totalRemainedNum = totalRemainedNum + remainedNum
 	}
-	log.Printf("totalRemaindNum : %v, result : %v", totalRemainedNum, result)
 
 	// Get random award.
 	random := rand.New(rand.NewSource(totalRemainedNum))
 	num := random.Int63n(totalRemainedNum)
-	log.Printf("num : %V", num)
 
 	var a *award
 	var total int64

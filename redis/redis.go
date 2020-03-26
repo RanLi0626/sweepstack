@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -9,35 +8,35 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func getConn() redis.Conn {
+func GetConn() (redis.Conn, error) {
 	conn, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", "127.0.0.1", 6379))
 	if err != nil {
 		log.Println("connect redis error", err)
-		return nil
+		return nil, err
 	}
 
-	return conn
+	return conn, nil
 }
 
 //InitRedis used to init award_time and award_remain_num
 func InitRedis() error {
-	fmt.Println("test")
-	conn := getConn()
-	if conn == nil {
+	conn, err := GetConn()
+	if err != nil {
 		log.Println("conn is nil")
-		return errors.New("conn is nil")
+		return err
 	}
 	defer conn.Close()
 
-	conn.Send("ZADD", "award_remain_num", 20, "A")
-	conn.Send("ZADD", "award_remain_num", 40, "B")
-	conn.Send("ZADD", "award_remain_num", 80, "C")
-	conn.Send("HSET", "award_time", "A", time.Now())
-	conn.Send("HSET", "award_time", "B", time.Now())
-	conn.Send("HSET", "award_time", "C", time.Now())
+	startTime, _ := time.Parse("2006-01-02 15:04:05", "2020-03-25 17:00:00")
+	conn.Send("ZADD", "award_remain_num", 200, "A")
+	conn.Send("ZADD", "award_remain_num", 400, "B")
+	conn.Send("ZADD", "award_remain_num", 800, "C")
+	conn.Send("HSET", "award_time", "A", startTime.Format(time.RFC3339))
+	conn.Send("HSET", "award_time", "B", startTime.Format(time.RFC3339))
+	conn.Send("HSET", "award_time", "C", startTime.Format(time.RFC3339))
 	conn.Flush()
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 6; i++ {
 		_, err := conn.Receive()
 		if err != nil {
 			log.Printf("conn send error, %s", err)

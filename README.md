@@ -20,3 +20,9 @@
    - A * 已发放奖品数量 -> C
    - start_time + C + 由B得到的随机时间%A -> D
    - time.now() >= D -> 中奖
+
+# 使用到的知识点
+1. Go启动一个web服务器
+2. Go连接redis,mysql及操作
+3. time包的使用，时区的注意
+4. 读取yaml配置文件

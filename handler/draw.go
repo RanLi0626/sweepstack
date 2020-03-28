@@ -10,13 +10,8 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 
+	"sweepstake/conf"
 	red "sweepstake/redis"
-)
-
-var (
-	layout    string = "2006-01-02 15:04:05"
-	startTime string = "2020-03-25 17:00:00"
-	endTime   string = "2020-03-25 19:00:00"
 )
 
 type award struct {
@@ -181,11 +176,11 @@ func getAwardInfo(result map[string]string, randomNum int64) (*award, error) {
 }
 
 func getNextReleasedTime(award *award) (int64, error) {
-	end, err := time.ParseInLocation(layout, endTime, time.Local)
+	end, err := time.ParseInLocation(conf.Conf.InitTimeConf.Layout, conf.Conf.InitTimeConf.EndTime, time.Local)
 	if err != nil {
 		return 0, err
 	}
-	start, err := time.ParseInLocation(layout, startTime, time.Local)
+	start, err := time.ParseInLocation(conf.Conf.InitTimeConf.Layout, conf.Conf.InitTimeConf.StartTime, time.Local)
 	if err != nil {
 		return 0, err
 	}
@@ -202,5 +197,9 @@ func getNextReleasedTime(award *award) (int64, error) {
 }
 
 func getTotalAwardNum() int64 {
-	return 200 + 400 + 800
+	aNum := conf.Conf.AwardConf.A
+	bNum := conf.Conf.AwardConf.B
+	cNum := conf.Conf.AwardConf.C
+
+	return aNum + bNum + cNum
 }

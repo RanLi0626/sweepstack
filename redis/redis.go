@@ -3,13 +3,14 @@ package redis
 import (
 	"fmt"
 	"log"
+	"sweepstake/conf"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
 )
 
 func GetConn() (redis.Conn, error) {
-	conn, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", "127.0.0.1", 6379))
+	conn, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", conf.Conf.RedisConf.Host, conf.Conf.RedisConf.Port))
 	if err != nil {
 		log.Println("connect redis error", err)
 		return nil, err
@@ -27,7 +28,7 @@ func InitRedis() error {
 	}
 	defer conn.Close()
 
-	startTime, _ := time.Parse("2006-01-02 15:04:05", "2020-03-25 17:00:00")
+	startTime, _ := time.Parse(conf.Conf.InitTimeConf.Layout, conf.Conf.InitTimeConf.StartTime)
 	conn.Send("ZADD", "award_remain_num", 200, "A")
 	conn.Send("ZADD", "award_remain_num", 400, "B")
 	conn.Send("ZADD", "award_remain_num", 800, "C")

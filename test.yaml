@@ -5,3 +5,9 @@ redis:
 initTime:
   starttime: "2020-03-25 17:00:00"
   endtime: "2020-03-25 19:00:00"
+  layout: "2006-01-02 15:04:05"
+
+award:
+  A: 200
+  B: 400
+  C: 800

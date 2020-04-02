@@ -10,7 +10,7 @@ import (
 )
 
 func GetConn() (redis.Conn, error) {
-	conn, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", conf.Conf.RedisConf.Host, conf.Conf.RedisConf.Port))
+	conn, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", conf.RedisConf.Host, conf.RedisConf.Port))
 	if err != nil {
 		log.Println("connect redis error", err)
 		return nil, err
@@ -28,7 +28,7 @@ func InitRedis() error {
 	}
 	defer conn.Close()
 
-	startTime, _ := time.Parse(conf.Conf.InitTimeConf.Layout, conf.Conf.InitTimeConf.StartTime)
+	startTime, _ := time.Parse(conf.InitTimeConf.Layout, conf.InitTimeConf.StartTime)
 	conn.Send("ZADD", "award_remain_num", 200, "A")
 	conn.Send("ZADD", "award_remain_num", 400, "B")
 	conn.Send("ZADD", "award_remain_num", 800, "C")

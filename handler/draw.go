@@ -176,11 +176,11 @@ func getAwardInfo(result map[string]string, randomNum int64) (*award, error) {
 }
 
 func getNextReleasedTime(award *award) (int64, error) {
-	end, err := time.ParseInLocation(conf.Conf.InitTimeConf.Layout, conf.Conf.InitTimeConf.EndTime, time.Local)
+	end, err := time.ParseInLocation(conf.InitTimeConf.Layout, conf.InitTimeConf.EndTime, time.Local)
 	if err != nil {
 		return 0, err
 	}
-	start, err := time.ParseInLocation(conf.Conf.InitTimeConf.Layout, conf.Conf.InitTimeConf.StartTime, time.Local)
+	start, err := time.ParseInLocation(conf.InitTimeConf.Layout, conf.InitTimeConf.StartTime, time.Local)
 	if err != nil {
 		return 0, err
 	}
@@ -197,9 +197,9 @@ func getNextReleasedTime(award *award) (int64, error) {
 }
 
 func getTotalAwardNum() int64 {
-	aNum := conf.Conf.AwardConf.A
-	bNum := conf.Conf.AwardConf.B
-	cNum := conf.Conf.AwardConf.C
+	aNum := conf.AwardConf.A
+	bNum := conf.AwardConf.B
+	cNum := conf.AwardConf.C
 
 	return aNum + bNum + cNum
 }

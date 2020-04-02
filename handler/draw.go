@@ -11,6 +11,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 
 	"sweepstake/conf"
+	"sweepstake/mysql"
 	red "sweepstake/redis"
 )
 
@@ -54,6 +55,26 @@ func draw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte(username + ", you win"))
+	db, err := mysql.GetConn()
+	defer db.Close()
+	if err != nil || db == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("got error when connecting mysql"))
+		log.Printf("got err %v", err)
+		return
+	}
+
+	stmt, err := db.Prepare("insert into winner_record(username,award,time) values(?,?,?);")
+	if err != nil {
+		log.Println("prepare insert sql error, ", err)
+		return
+	}
+	_, err = stmt.Exec(username, award.name, time.Now())
+	if err != nil {
+		log.Println("exec sql error, ", err)
+		return
+	}
+
 	return
 }
 
